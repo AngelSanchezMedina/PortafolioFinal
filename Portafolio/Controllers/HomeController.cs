@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Portafolio.Models;
 using Portafolio.Servicios;
@@ -19,9 +19,9 @@ namespace Portafolio.Controllers
             this.repositorioProyectos = repositorioProyectos;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var proyectos = repositorioProyectos.ObtenerProyectos().Take(3).ToList();
+            var proyectos = (await repositorioProyectos.Obtener()).Take(3).ToList();
 
             var modelo = new HomeIndexViewModel() 
             {
@@ -30,11 +30,12 @@ namespace Portafolio.Controllers
                 return View(modelo);
         }
 
-        public IActionResult Proyectos()
+        public async Task<IActionResult> MisProyectos()
         {
-            var proyectos = repositorioProyectos.ObtenerProyectos();
-            return View(proyectos);
+            var proyecto = await repositorioProyectos.Obtener();
+            return View(proyecto);
         }
+
 
         [HttpGet]
         public IActionResult Contacto()

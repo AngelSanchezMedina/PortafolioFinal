@@ -1,50 +1,81 @@
-﻿using Portafolio.Models;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
+using Portafolio.Models;
 
 namespace Portafolio.Servicios
 {
     public interface IRepositorioProyectos
     {
-        List<Proyecto> ObtenerProyectos();
+        Task Actualizar(Proyecto proyecto);
+        Task Borrar(int id);
+        Task Crear(Proyecto proyecto);
+        Task<IEnumerable<Proyecto>> Obtener();
+        Task<Proyecto> ObtenerPorId(int id);
+        Task<List<Proyecto>> ObtenerProyectos();
     }
 
     public class RepositorioProyectos : IRepositorioProyectos
     {
-        public List<Proyecto> ObtenerProyectos()
+        private readonly string connectionString;
+
+        public RepositorioProyectos(IConfiguration configuration)
         {
-            return new List<Proyecto>()
-            {
-                new Proyecto()
-                {
-                    Titulo = "Amazon",
-                    Descripcion = "E-commerce realizado en ASP .NET core",
-                    Link = "https://www.amazon.com",
-                    ImagenURL = "/imagenes/amazon.png"
-                },
+            connectionString = configuration.GetConnectionString("DefaultConnection");
+        }
 
-                new Proyecto()
-                {
-                    Titulo = "New York Times",
-                    Descripcion = "Página de noticias en React",
-                    Link = "https://www.nytimes.com",
-                    ImagenURL = "/imagenes/nyt.png"
-                },
+        public async Task<IEnumerable<Proyecto>> Obtener()
+        {
+            using var connection = new SqlConnection(connectionString);
+            var query = @"SELECT idProyecto, titulo, descripcion, imagenUrl, link
+                          FROM Proyecto";
+            return await connection.QueryAsync<Proyecto>(query);
+        }
 
-                new Proyecto()
-                {
-                    Titulo = "Reddit",
-                    Descripcion = "Red social para compartir en comunidades",
-                    Link = "https://reddit.com",
-                    ImagenURL = "/imagenes/reddit.png"
-                },
+        public async Task<List<Proyecto>> ObtenerProyectos()
+        {
+            using var connection = new SqlConnection(connectionString);
+            var query = @"SELECT idProyecto, titulo, descripcion, imagenUrl, link
+                  FROM Proyecto";
 
-                new Proyecto()
-                {
-                    Titulo = "Steam",
-                    Descripcion = "Tienda en línea para comprar videojuegos",
-                    Link = "https://store.steampowered.com",
-                    ImagenURL = "/imagenes/steam.png"
-                },
-            };
+            var proyectos = await connection.QueryAsync<Proyecto>(query);
+            return proyectos.ToList();
+        }
+
+        public async Task<Proyecto> ObtenerPorId(int id)
+        {
+            using var connection = new SqlConnection(connectionString);
+            var query = @"SELECT idProyecto, titulo, descripcion, imagenUrl, link
+                          FROM Proyecto
+                          WHERE idProyecto = @id";
+            return await connection.QueryFirstOrDefaultAsync<Proyecto>(query, new { id });
+        }
+
+        public async Task Crear(Proyecto proyecto)
+        {
+            using var connection = new SqlConnection(connectionString);
+
+            var id = await connection.QuerySingleAsync<int>(
+                @"INSERT INTO Proyecto (titulo, descripcion, imagenUrl, link)
+                  VALUES (@titulo, @descripcion, @imagenUrl, @link);
+                  SELECT SCOPE_IDENTITY();", proyecto);
+        }
+
+        public async Task Actualizar(Proyecto proyecto)
+        {
+            using var connection = new SqlConnection(connectionString);
+            await connection.ExecuteAsync(@"UPDATE Proyecto SET
+                                            titulo = @titulo,
+                                            descripcion = @descripcion,
+                                            imagenUrl = @imagenUrl,
+                                            link = @link
+                                            WHERE idProyecto = @idProyecto", proyecto);
+        }
+
+        public async Task Borrar(int id)
+        {
+            using var connection = new SqlConnection(connectionString);
+            var query = "DELETE FROM Proyecto WHERE idProyecto = @id";
+            await connection.ExecuteAsync(query, new { id });
         }
     }
 }

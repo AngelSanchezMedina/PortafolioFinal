@@ -1,0 +1,50 @@
+﻿@model Proyecto
+
+@{
+    ViewData["Title"] = "Crear Proyecto";
+}
+
+<div class="main-content">
+    <div class="page-content">
+        <div class="form-container">
+            <h1>Crear Nuevo Proyecto</h1>
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <form asp-action="Crear">
+
+                <div class="mb-3">
+                    <label asp-for="Titulo" class="form-label"></label>
+                    <input type="text" asp-for="Titulo" class="form-control" />
+                    <span asp-validation-for="Titulo" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Descripcion" class="form-label"></label>
+                    <input type="text" asp-for="Descripcion" class="form-control" />
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ImagenURL" class="form-label"></label>
+                    <input type="text" asp-for="ImagenURL" class="form-control" />
+                    <span asp-validation-for="ImagenURL" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Link" class="form-label"></label>
+                    <input type="text" asp-for="Link" class="form-control" />
+                    <span asp-validation-for="Link" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Enviar</button>
+                <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

@@ -1,0 +1,50 @@
+﻿@model IEnumerable<Proyecto>
+
+@{
+    ViewData["Title"] = "Proyectos";
+}
+
+<div class="page-content">
+    <div class="header-bar">
+        <h2>📦 Proyectos</h2>
+        <a asp-action="Crear" class="btn btn-add">+ Agregar Proyecto</a>
+        <a asp-controller="Home" asp-action="MisProyectos" class="btn btn-add">+ Ver Proyectos</a>
+    </div>
+
+    <div class="table-container">
+        <table class="table table-dark table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Titulo</th>
+                    <th>Descripcion</th>
+                    <th>imagenUrl</th>
+                    <th>Link</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var proyecto in Model)
+                {
+                    <tr>
+                        <td>@proyecto.Titulo</td>
+                        <td>@proyecto.Descripcion</td>
+                        <td>@proyecto.ImagenURL</td>
+                        <td>@proyecto.Link</td>
+                        <td class="text-center">
+                            <a class="btn btn-sm btn-warning me-1"
+                               asp-action="Editar"
+                               asp-route-id="@proyecto.idProyecto">
+                                ✏️ Editar
+                            </a>
+                            <a class="btn btn-sm btn-danger"
+                               asp-action="Borrar"
+                               asp-route-id="@proyecto.idProyecto">
+                                🗑️ Borrar
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
