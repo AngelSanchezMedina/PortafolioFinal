@@ -36,11 +36,15 @@
                                asp-route-id="@proyecto.idProyecto">
                                 ✏️ Editar
                             </a>
-                            <a class="btn btn-sm btn-danger"
-                               asp-action="Borrar"
-                               asp-route-id="@proyecto.idProyecto">
+
+                            <!-- Botón que abre el modal -->
+                            <button class="btn btn-sm btn-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalBorrar"
+                                    data-id="@proyecto.idProyecto"
+                                    data-titulo="@proyecto.Titulo">
                                 🗑️ Borrar
-                            </a>
+                            </button>
                         </td>
                     </tr>
                 }
@@ -48,3 +52,54 @@
         </table>
     </div>
 </div>
+
+<!-- ========================= -->
+<!--   MODAL DE CONFIRMACIÓN   -->
+<!-- ========================= -->
+<div class="modal fade" id="modalBorrar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>¿Seguro que deseas eliminar el proyecto <strong id="proyectoTitulo"></strong>?</p>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+                <!-- Formulario que hace POST -->
+                <form id="formBorrar" method="post" asp-action="BorrarConfirmado">
+                    <input type="hidden" name="id" id="proyectoId" />
+                    <button class="btn btn-danger" type="submit">Sí, eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const modalBorrar = document.getElementById('modalBorrar');
+
+        modalBorrar.addEventListener('show.bs.modal', function (event) {
+
+            const button = event.relatedTarget;
+
+            const id = button.getAttribute('data-id');
+            const titulo = button.getAttribute('data-titulo');
+
+            document.getElementById('proyectoTitulo').textContent = titulo;
+
+            // Asigna el id al hidden input del form
+            document.getElementById('proyectoId').value = id;
+
+            // Actualiza la acción del formulario POST
+            const form = document.getElementById('formBorrar');
+            form.action = `/Proyecto/BorrarConfirmado/${id}`;
+        });
+    </script>
+}

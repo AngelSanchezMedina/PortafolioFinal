@@ -54,14 +54,27 @@ namespace Portafolio.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
         public async Task<IActionResult> Borrar(int id)
         {
-            var producto = await repositorioProyectos.ObtenerPorId(id);
-            if (producto is null)
-                return RedirectToAction("Index");
+            var proyecto = await repositorioProyectos.ObtenerPorId(id);
 
-            return View(producto);
+            if (proyecto is null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            return View(proyecto);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> BorrarConfirmado(int id)
+        {
+            await repositorioProyectos.Borrar(id);
+            return RedirectToAction("Index");
+        }
+
+
 
         [HttpPost]
         public async Task<IActionResult> BorrarProyecto(int id)
