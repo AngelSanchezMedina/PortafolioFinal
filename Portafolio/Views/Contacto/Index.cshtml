@@ -1,0 +1,33 @@
+﻿@model Portafolio.Models.ContactoViewModel
+
+@{
+    ViewData["Title"] = "Contacto";
+}
+
+<h1>Formulario de Contacto</h1>
+
+<form asp-controller="Contacto" asp-action="Crear" method="post">
+    <div class="mb-3">
+        <label asp-for="nombre" class="form-label"></label>
+        <input asp-for="nombre" class="form-control" placeholder="Fulano" />
+        <span asp-validation-for="nombre" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="email" class="form-label"></label>
+        <input asp-for="email" class="form-control" placeholder="fulano@ejemplo.com" />
+        <span asp-validation-for="email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="mensaje" class="form-label"></label>
+        <textarea asp-for="mensaje" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="mensaje" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Enviar</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
