@@ -1,0 +1,99 @@
+﻿@model IEnumerable<ContactoViewModel>
+
+@{
+    ViewData["Title"] = "Lista de Contactos";
+}
+
+<div class="page-content">
+    <div class="header-bar">
+        <h2>Lista de Contactos</h2>
+    </div>
+
+    <div class="table-container">
+        <table class="table table-dark table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>idContacto</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Mensaje</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var contacto in Model)
+                {
+                    <tr>
+                        <td>@contacto.idContacto</td>
+                        <td>@contacto.nombre</td>
+                        <td>@contacto.email</td>
+                        <td>@contacto.mensaje</td>
+
+                        <td class="text-center">
+                            <!-- Botón que abre el modal -->
+                            <button class="btn btn-sm btn-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalBorrar"
+                                    data-id="@contacto.idContacto"
+                                    data-nombre="@contacto.nombre">
+                                🗑️ Borrar
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ========================= -->
+<!--   MODAL DE CONFIRMACIÓN   -->
+<!-- ========================= -->
+<div class="modal fade" id="modalBorrar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>¿Seguro que deseas borrar el contacto <strong id="contactoNombre"></strong>?</p>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+                <!-- Formulario que hace POST -->
+                <form id="formBorrar" method="post" asp-controller="Contacto" asp-action="BorrarConfirmado">
+                    <input type="hidden" name="id" id="idContactoHidden" />
+                    <button class="btn btn-danger" type="submit">Sí, borrar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const modalBorrar = document.getElementById('modalBorrar');
+
+        modalBorrar.addEventListener('show.bs.modal', function (event) {
+
+            const button = event.relatedTarget;
+
+            const id = button.getAttribute('data-id');
+            const nombre = button.getAttribute('data-nombre');
+
+            // Asignar nombre al texto del modal
+            document.getElementById('contactoNombre').textContent = nombre;
+
+            // Asignar id al input hidden
+            document.getElementById('idContactoHidden').value = id;
+
+            // Actualizar acción dinámica (opcional si usas asp-controller / asp-action)
+            const form = document.getElementById('formBorrar');
+            form.action = `/Contacto/BorrarConfirmado/${id}`;
+        });
+    </script>
+}

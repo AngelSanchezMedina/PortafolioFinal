@@ -12,6 +12,7 @@ namespace Portafolio.Servicios
         Task<IEnumerable<Proyecto>> Obtener();
         Task<Proyecto> ObtenerPorId(int id);
         Task<List<Proyecto>> ObtenerProyectos();
+        Task Ordenar(IEnumerable<Proyecto> proyectosOrdenados);
     }
 
     public class RepositorioProyectos : IRepositorioProyectos
@@ -26,8 +27,9 @@ namespace Portafolio.Servicios
         public async Task<IEnumerable<Proyecto>> Obtener()
         {
             using var connection = new SqlConnection(connectionString);
-            var query = @"SELECT idProyecto, titulo, descripcion, imagenUrl, link
-                          FROM Proyecto";
+            var query = @"SELECT idProyecto, titulo, descripcion, imagenUrl, link, orden
+                          FROM Proyecto
+                          ORDER BY Orden";
             return await connection.QueryAsync<Proyecto>(query);
         }
 
@@ -44,13 +46,13 @@ namespace Portafolio.Servicios
         public async Task<Proyecto> ObtenerPorId(int id)
         {
             using var connection = new SqlConnection(connectionString);
-            var query = @"SELECT idProyecto, titulo, descripcion, imagenUrl, link
+            var query = @"SELECT idProyecto, titulo, descripcion, imagenUrl, link, orden
                           FROM Proyecto
                           WHERE idProyecto = @id";
             return await connection.QueryFirstOrDefaultAsync<Proyecto>(query, new { id });
         }
 
-        public async Task Crear(Proyecto proyecto)
+        /*public async Task Crear(Proyecto proyecto)
         {
             using var connection = new SqlConnection(connectionString);
 
@@ -58,7 +60,23 @@ namespace Portafolio.Servicios
                 @"INSERT INTO Proyecto (titulo, descripcion, imagenUrl, link)
                   VALUES (@titulo, @descripcion, @imagenUrl, @link);
                   SELECT SCOPE_IDENTITY();", proyecto);
-        }
+        }*/
+
+        public async Task Crear(Proyecto proyecto)
+        {
+            using var connection = new SqlConnection(connectionString);
+            var id = await connection.QuerySingleAsync<int>
+                ("Proyecto_Insertar",
+                new
+                {
+                    titulo = proyecto.Titulo,
+                    descripcion = proyecto.Descripcion,
+                    imagenURL = proyecto.ImagenURL,
+                    link = proyecto.Link,
+                },
+                commandType: System.Data.CommandType.StoredProcedure);
+            proyecto.idProyecto = id;
+        }//clase lunes
 
         public async Task Actualizar(Proyecto proyecto)
         {
@@ -76,6 +94,13 @@ namespace Portafolio.Servicios
             using var connection = new SqlConnection(connectionString);
             var query = "DELETE FROM Proyecto WHERE idProyecto = @id";
             await connection.ExecuteAsync(query, new { id });
+        }
+
+        public async Task Ordenar(IEnumerable<Proyecto> proyectosOrdenados)
+        {
+            var query = "UPDATE Proyecto SET orden = @orden WHERE idProyecto = @idProyecto;";
+            using var connection = new SqlConnection(connectionString);
+            await connection.ExecuteAsync(query, proyectosOrdenados);
         }
     }
 }

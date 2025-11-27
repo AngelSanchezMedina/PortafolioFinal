@@ -35,5 +35,45 @@ namespace Portafolio.Controllers
             await repositorioContactos.Crear(contactoViewModel);
             return RedirectToAction("Index", "Home");
         }
+
+        public async Task<IActionResult> ListaContactos()
+        {
+            var contactos = await repositorioContactos.ObtenerListaContactos();
+
+            if (contactos == null)
+            {
+                contactos = new List<ContactoViewModel>();
+            }
+
+            return View(contactos);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Borrar(int id)
+        {
+            var contactoViewModels = await repositorioContactos.ObtenerListaContactos();
+
+            if (contactoViewModels is null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            return View(contactoViewModels);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BorrarConfirmado(int id)
+        {
+            await repositorioContactos.Borrar(id);
+            return RedirectToAction("ListaContactos");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BorrarContacto(int id)
+        {
+            await repositorioContactos.Borrar(id);
+            return RedirectToAction("Index");
+        }
+
     }
 }

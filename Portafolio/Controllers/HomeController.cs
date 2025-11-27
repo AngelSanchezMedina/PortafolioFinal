@@ -10,24 +10,30 @@ namespace Portafolio.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IRepositorioProyectos repositorioProyectos;
+        private readonly IRepositorioHabilidades repositorioHabilidades;
 
         public HomeController(ILogger<HomeController> logger,
-            IRepositorioProyectos repositorioProyectos
+            IRepositorioProyectos repositorioProyectos,
+            IRepositorioHabilidades repositorioHabilidades
             )
         {
             _logger = logger;
             this.repositorioProyectos = repositorioProyectos;
+            this.repositorioHabilidades = repositorioHabilidades;
         }
 
         public async Task<IActionResult> Index()
         {
             var proyectos = (await repositorioProyectos.Obtener()).Take(3).ToList();
+            var habilidades = await repositorioHabilidades.Obtener();
 
-            var modelo = new HomeIndexViewModel() 
+            var modelo = new HomeIndexViewModel()
             {
-                Proyectos = proyectos
+                Proyectos = proyectos,
+                Habilidades = habilidades
             };
-                return View(modelo);
+
+            return View(modelo);
         }
 
         public async Task<IActionResult> MisProyectos()

@@ -22,22 +22,23 @@
                     <th class="text-center">Acciones</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="reordenable">
                 @foreach (var proyecto in Model)
                 {
                     <tr>
+                        <input type="hidden" value="@proyecto.idProyecto" class="ids" />
+
                         <td>@proyecto.Titulo</td>
                         <td>@proyecto.Descripcion</td>
                         <td>@proyecto.ImagenURL</td>
                         <td>@proyecto.Link</td>
+
                         <td class="text-center">
                             <a class="btn btn-sm btn-warning me-1"
                                asp-action="Editar"
                                asp-route-id="@proyecto.idProyecto">
                                 ✏️ Editar
                             </a>
-
-                            <!-- Botón que abre el modal -->
                             <button class="btn btn-sm btn-danger"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalBorrar"
@@ -101,5 +102,40 @@
             const form = document.getElementById('formBorrar');
             form.action = `/Proyecto/BorrarConfirmado/${id}`;
         });
+
+        const urlOrdenar = '@Url.Action("ordenar")';
+
+        $(function () {
+            $("#reordenable").sortable({
+                stop: async function (e, ui) {
+                    await actualizarOrdenes();
+                }
+            });
+
+            async function actualizarOrdenes() {
+                const ids = obtenerIdsDeElementos();
+                await enviarIdsAlBackend(ids);
+            }
+
+            function obtenerIdsDeElementos() {
+                const ids = $(".ids").map(function () {
+                    return $(this).val();
+                }).get();
+                return ids;
+            }
+
+            async function enviarIdsAlBackend(ids) {
+                var data = JSON.stringify(ids);
+
+                await fetch(urlOrdenar, {
+                    method: 'POST',
+                    body: data,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+            }
+        })
     </script>
 }
+

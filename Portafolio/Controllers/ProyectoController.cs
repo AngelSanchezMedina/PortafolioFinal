@@ -82,5 +82,27 @@ namespace Portafolio.Controllers
             await repositorioProyectos.Borrar(id);
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Ordenar([FromBody] int[] ids)
+        {
+            var proyectos = await repositorioProyectos.Obtener();
+            var idProyectos = proyectos.Select(x => x.idProyecto);
+
+            var idsProyectosNoPerteneceAlUsuario = ids.Except(idProyectos).ToList();
+
+            if (idsProyectosNoPerteneceAlUsuario.Count > 0)
+            {
+                return Forbid();
+            }
+
+            var proyectosOrdenados = ids.Select((valor, indice) =>
+            new Proyecto() { idProyecto = valor, orden = indice + 1 }).AsEnumerable();
+
+            await repositorioProyectos.Ordenar(proyectosOrdenados);
+
+            return Ok();
+
+        }
     }
 }

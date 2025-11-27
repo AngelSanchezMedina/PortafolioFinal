@@ -1,0 +1,38 @@
+﻿@model HabilidadesViewModel
+
+<h2>Editar Habilidades</h2>
+
+<form asp-action="Editar" method="post">
+
+    <h3>Back-end</h3>
+
+    <label>Título</label>
+    <input asp-for="BackTitulo" class="form-control" />
+
+    <label>Descripción</label>
+    <textarea asp-for="BackDescripcion" class="form-control"></textarea>
+
+    <label>Stack</label>
+    <input asp-for="BackStack" class="form-control" />
+
+    <label>Experiencia (separada por comas)</label>
+    <input name="BackExperiencia" value="@string.Join(",", Model.BackExperiencia)" class="form-control" />
+
+    <hr />
+
+    <h3>Front-end</h3>
+
+    <label>Título</label>
+    <input asp-for="FrontTitulo" class="form-control" />
+
+    <label>Descripción</label>
+    <textarea asp-for="FrontDescripcion" class="form-control"></textarea>
+
+    <label>Stack</label>
+    <input asp-for="FrontStack" class="form-control" />
+
+    <label>Experiencia (separada por comas)</label>
+    <input name="FrontExperiencia" value="@string.Join(",", Model.FrontExperiencia)" class="form-control" />
+
+    <button type="submit" class="btn btn-primary mt-3">Guardar</button>
+</form>
